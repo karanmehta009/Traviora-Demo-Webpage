@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tour Packages | Traviora Tours & Travel</title>
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Browse our luxury tour packages. Filter by destination, budget, duration, and style. Find your perfect escape with Traviora.">
+  
+  <!-- Icon & Styling CDNs -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  
+  <style>
+    /* Listings Specific Layout */
+    .breadcrumb-section {
+      padding: 100px 0 20px;
+      background-color: var(--light-gray);
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .breadcrumbs {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      gap: 8px;
+    }
+    
+    .breadcrumbs a:hover {
+      color: var(--accent-gold);
+    }
+    
+    .listings-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 40px;
+      padding: 50px 0 80px;
+    }
+    
+    /* Left Filter Panel */
+    .filter-panel {
+      background-color: var(--pure-white);
+      padding: 30px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+      height: fit-content;
+      position: sticky;
+      top: 100px;
+    }
+    
+    .filter-group {
+      margin-bottom: 25px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .filter-group:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    
+    .filter-title {
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--primary-navy);
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .filter-input-wrapper {
+      position: relative;
+    }
+    
+    .filter-input-wrapper i {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--accent-gold);
+      font-size: 0.95rem;
+    }
+    
+    .filter-control {
+      width: 100%;
+      padding: 10px 12px 10px 34px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      background-color: var(--off-white);
+      font-size: 0.9rem;
+      transition: var(--transition);
+    }
+    
+    .filter-control:focus {
+      border-color: var(--accent-gold);
+      background-color: var(--pure-white);
+    }
+    
+    .filter-select {
+      padding-left: 12px;
+      cursor: pointer;
+    }
+    
+    .budget-slider-wrapper {
+      padding-top: 10px;
+    }
+    
+    .slider-range {
+      width: 100%;
+      height: 6px;
+      background-color: var(--border-color);
+      border-radius: 3px;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      cursor: pointer;
+    }
+    
+    .slider-range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background-color: var(--accent-gold);
+      border: 2px solid var(--pure-white);
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+    
+    .slider-range::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+    
+    .budget-limits {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+    
+    /* Right Results Section */
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .results-info h1 {
+      font-size: 2rem;
+      margin-bottom: 4px;
+    }
+    
+    .results-actions {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .sort-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+    
+    .sort-select {
+      padding: 8px 12px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      background-color: var(--pure-white);
+      color: var(--text-dark);
+      cursor: pointer;
+    }
+    
+    @media (max-width: 1024px) {
+      .listings-layout {
+        grid-template-columns: 1fr;
+      }
+      
+      .filter-panel {
+        position: static;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Dynamic Header Navigation -->
+  <header class="header" id="header-placeholder"></header>
+
+  <!-- Breadcrumbs -->
+  <section class="breadcrumb-section">
+    <div class="container">
+      <div class="breadcrumbs">
+        <a href="index.html">Home</a>
+        <span>&bull;</span>
+        <span style="color: var(--text-dark); font-weight: 500;">Tour Packages</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Grid Listings Content -->
+  <div class="container">
+    <main class="listings-layout">
+      
+      <!-- Left Filters Sidebar -->
+      <aside class="filter-panel">
+        <div class="filter-title" style="border-bottom: 2px solid var(--accent-gold); padding-bottom: 10px; margin-bottom: 20px;">
+          <span>Filters</span>
+          <button onclick="resetAllFilters()" style="font-size:0.75rem; color:var(--accent-gold); text-transform:none; font-weight:600">Clear All</button>
+        </div>
+        
+        <!-- Keyword Search -->
+        <div class="filter-group">
+          <label class="filter-title">Destination</label>
+          <div class="filter-input-wrapper">
+            <i class="fa-solid fa-location-dot"></i>
+            <input type="text" class="filter-control" id="filter-dest" placeholder="e.g. Goa, Bali...">
+          </div>
+        </div>
+        
+        <!-- Price Budget Filter -->
+        <div class="filter-group">
+          <label class="filter-title">Max Budget <span id="budget-val" style="color: var(--accent-gold);">₹1,50,000</span></label>
+          <div class="budget-slider-wrapper">
+            <input type="range" class="slider-range" id="filter-budget" min="10000" max="150000" step="5000" value="150000">
+            <div class="budget-limits">
+              <span>₹10,000</span>
+              <span>₹1,50,000</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Duration Filter -->
+        <div class="filter-group">
+          <label class="filter-title">Duration</label>
+          <select class="filter-control filter-select" id="filter-duration">
+            <option value="">Any Duration</option>
+            <option value="short">Short (1-4 Days)</option>
+            <option value="medium">Medium (5-6 Days)</option>
+            <option value="long">Long (7+ Days)</option>
+          </select>
+        </div>
+        
+        <!-- Category Filter -->
+        <div class="filter-group">
+          <label class="filter-title">Experience Style</label>
+          <select class="filter-control filter-select" id="filter-category">
+            <option value="">All Styles</option>
+            <option value="Beach">Beach Escape</option>
+            <option value="Mountain">Mountain Adventure</option>
+            <option value="Romantic">Romantic Getaway</option>
+            <option value="Family">Family Holiday</option>
+            <option value="Backpacking">Backpacking</option>
+            <option value="Luxury">Luxury Travel</option>
+          </select>
+        </div>
+        
+        <!-- Rating Filter -->
+        <div class="filter-group">
+          <label class="filter-title">Traveller Rating</label>
+          <select class="filter-control filter-select" id="filter-rating">
+            <option value="">Any Rating</option>
+            <option value="4.8">★★★★★ 4.8 & above</option>
+            <option value="4.5">★★★★☆ 4.5 & above</option>
+            <option value="4.0">★★★★☆ 4.0 & above</option>
+          </select>
+        </div>
+      </aside>
+      
+      <!-- Right Side Tour Cards Listings -->
+      <section class="results-container">
+        <!-- Results stats and sorting -->
+        <div class="results-header">
+          <div class="results-info">
+            <h1>Explore Tour Packages</h1>
+            <p id="results-count">0 packages available</p>
+          </div>
+          <div class="results-actions">
+            <div class="sort-wrapper">
+              <label for="sort-by">Sort By:</label>
+              <select class="sort-select" id="sort-by">
+                <option value="recommended" selected>Recommended</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+                <option value="rating">Highest Rated</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Cards Grid -->
+        <div class="grid grid-3" id="tours-listings-grid">
+          <!-- Dynamically populated via js/tours.js -->
+        </div>
+      </section>
+      
+    </main>
+  </div>
+
+  <!-- Dynamic Footer Placeholder -->
+  <footer class="footer" id="footer-placeholder"></footer>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/tours.js"></script>
+  <script src="js/ai-assistant.js"></script>
+</body>
+</html>

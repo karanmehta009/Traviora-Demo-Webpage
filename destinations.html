@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explore Destinations | Traviora</title>
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Discover handpicked vacation destinations. Find perfect beaches, mountains, romantic spots and luxury escapes worldwide with Traviora.">
+  
+  <!-- Icon & Styling CDNs -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  
+  <style>
+    /* Destinations page grid styling */
+    .dest-hero {
+      background-image: linear-gradient(rgba(7,27,46,0.6), rgba(7,27,46,0.6)), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=80');
+      background-size: cover;
+      background-position: center;
+      padding: 120px 0 80px;
+      color: white;
+      text-align: center;
+    }
+    
+    .dest-hero h1 {
+      color: white;
+      font-size: 3rem;
+      margin-bottom: 12px;
+    }
+    
+    .dest-hero p {
+      color: rgba(255,255,255,0.9);
+      font-size: 1.15rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .dest-grid-container {
+      padding: 60px 0 90px;
+    }
+
+    /* Destination card badge addition */
+    .dest-card-badge {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background-color: var(--accent-gold);
+      color: var(--primary-navy);
+      padding: 4px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      z-index: 3;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Dynamic Header Navigation -->
+  <header class="header" id="header-placeholder"></header>
+
+  <!-- Hero Section -->
+  <section class="dest-hero">
+    <div class="container">
+      <h1>Explore Destinations</h1>
+      <p>Discover handpicked locations and dream getaways tailored to your travel preferences.</p>
+    </div>
+  </section>
+
+  <!-- Destinations Catalog Grid -->
+  <section class="container dest-grid-container">
+    <div class="grid grid-3" id="destinations-list-grid">
+      <!-- Injected via JavaScript -->
+    </div>
+  </section>
+
+  <!-- Dynamic Footer Placeholder -->
+  <footer class="footer" id="footer-placeholder"></footer>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/ai-assistant.js"></script>
+  
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Render shared layout
+      window.renderHeader('destinations');
+      window.renderFooter();
+      
+      // Render destinations cards
+      renderDestinationsGrid();
+    });
+
+    function renderDestinationsGrid() {
+      const container = document.getElementById("destinations-list-grid");
+      if (!container) return;
+      
+      const dests = window.TravioraDb.getDestinations();
+      container.innerHTML = dests.map(d => `
+        <div class="dest-card" onclick="location.href='tours.html?dest=${encodeURIComponent(d.name)}'" style="margin-bottom:10px">
+          <span class="dest-card-badge">${d.type}</span>
+          <img src="${d.image}" class="dest-card-img" alt="${d.name}">
+          <div class="dest-card-overlay">
+            <h3 class="dest-card-title">${d.name}</h3>
+            <p class="dest-card-desc">${d.tagline}</p>
+            <div class="dest-card-footer">
+              <span class="dest-card-price">Packages from <strong>₹${d.price.toLocaleString('en-IN')}</strong></span>
+              <div class="dest-card-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+  </script>
+</body>
+</html>

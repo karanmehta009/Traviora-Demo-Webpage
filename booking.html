@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete Your Booking | Traviora</title>
+  
+  <!-- Icon & Styling CDNs -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  
+  <style>
+    /* Booking Wizard Custom Page Styling */
+    .breadcrumb-section {
+      padding: 100px 0 20px;
+      background-color: var(--light-gray);
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .breadcrumbs {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      gap: 8px;
+    }
+    
+    .booking-wrapper {
+      padding: 50px 0 80px;
+    }
+    
+    .booking-grid {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 40px;
+      align-items: start;
+    }
+    
+    /* Wizard Steps Navigation Header */
+    .steps-navigation {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 40px;
+      position: relative;
+    }
+    
+    .steps-navigation::before {
+      content: '';
+      position: absolute;
+      top: 25px;
+      left: 10%;
+      right: 10%;
+      height: 2px;
+      background-color: var(--border-color);
+      z-index: 1;
+    }
+    
+    .step-indicator-wrapper {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 25%;
+    }
+    
+    .step-node {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: var(--border-color);
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+      border: 3px solid var(--pure-white);
+      transition: var(--transition);
+    }
+    
+    .step-indicator-wrapper.active .step-node {
+      background-color: var(--accent-gold);
+      color: var(--primary-navy);
+      box-shadow: 0 0 0 4px rgba(201, 138, 36, 0.15);
+    }
+    
+    .step-indicator-wrapper.completed .step-node {
+      background-color: var(--primary-navy);
+      color: var(--pure-white);
+    }
+    
+    .step-label {
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-top: 10px;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+    }
+    
+    .step-indicator-wrapper.active .step-label {
+      color: var(--primary-navy);
+    }
+    
+    /* Steps Content Panels */
+    .step-panel {
+      display: none;
+      background-color: var(--pure-white);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .step-panel.active {
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+    
+    .step-panel h2 {
+      font-size: 1.6rem;
+      margin-bottom: 24px;
+      border-bottom: 1.5px solid var(--accent-gold);
+      padding-bottom: 8px;
+    }
+    
+    /* Summary Sidebar */
+    .checkout-sidebar {
+      background-color: var(--pure-white);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 30px;
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .checkout-sidebar h3 {
+      font-size: 1.25rem;
+      margin-bottom: 15px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 10px;
+    }
+    
+    .checkout-item-details {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .checkout-thumb {
+      width: 80px;
+      height: 60px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+    }
+    
+    .checkout-info h4 {
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      color: var(--primary-navy);
+      line-height: 1.3;
+    }
+    
+    .checkout-info span {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      color: var(--text-dark);
+      margin-bottom: 12px;
+    }
+    
+    .price-row.total-row {
+      font-family: var(--font-body);
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--primary-navy);
+      border-top: 1px dashed var(--border-color);
+      padding-top: 15px;
+      margin-top: 15px;
+      margin-bottom: 0;
+    }
+    
+    /* Form fields */
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--primary-navy);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      background-color: var(--off-white);
+      font-size: 0.95rem;
+      transition: var(--transition);
+    }
+    
+    .form-control:focus {
+      border-color: var(--accent-gold);
+      background-color: var(--pure-white);
+      outline: none;
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    
+    .wizard-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 35px;
+      padding-top: 25px;
+      border-top: 1px solid var(--border-color);
+    }
+    
+    /* Success Screen style */
+    .success-container {
+      text-align: center;
+      padding: 20px 0;
+    }
+    
+    .success-icon-wrapper {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      margin: 0 auto 24px;
+    }
+    
+    .receipt-box {
+      background-color: var(--off-white);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      text-align: left;
+      margin: 25px 0;
+    }
+    
+    .receipt-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      border-bottom: 1.5px solid var(--border-color);
+      padding-bottom: 12px;
+      margin-bottom: 15px;
+    }
+    
+    @media (max-width: 1024px) {
+      .booking-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .checkout-sidebar {
+        position: static;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      
+      .steps-navigation::before {
+        display: none;
+      }
+      
+      .step-node {
+        width: 38px;
+        height: 38px;
+        font-size: 0.95rem;
+      }
+      
+      .step-label {
+        font-size: 0.65rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Dynamic Header Navigation -->
+  <header class="header" id="header-placeholder"></header>
+
+  <!-- Breadcrumbs -->
+  <section class="breadcrumb-section">
+    <div class="container">
+      <div class="breadcrumbs">
+        <a href="index.html">Home</a>
+        <span>&bull;</span>
+        <span style="color: var(--text-dark); font-weight: 500;">Checkout Booking</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Checkout Grid Container -->
+  <div class="container booking-wrapper">
+    
+    <!-- Step indicator headers -->
+    <div class="steps-navigation">
+      <div class="step-indicator-wrapper active" id="ind-step-1">
+        <div class="step-node">1</div>
+        <div class="step-label">Select Options</div>
+      </div>
+      <div class="step-indicator-wrapper" id="ind-step-2">
+        <div class="step-node">2</div>
+        <div class="step-label">Guest Details</div>
+      </div>
+      <div class="step-indicator-wrapper" id="ind-step-3">
+        <div class="step-node">3</div>
+        <div class="step-label">Payment</div>
+      </div>
+      <div class="step-indicator-wrapper" id="ind-step-4">
+        <div class="step-node">4</div>
+        <div class="step-label">Confirmation</div>
+      </div>
+    </div>
+    
+    <!-- Main Form Grid -->
+    <div class="booking-grid">
+      
+      <!-- Wizard Step Forms -->
+      <main>
+        
+        <!-- STEP 1: Options -->
+        <section class="step-panel active" id="panel-step-1">
+          <h2>Configure Booking Options</h2>
+          <form id="form-step-1">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="booking-date">Target Date</label>
+                <input type="date" class="form-control" id="booking-date" required>
+              </div>
+              <div class="form-group" id="nights-group" style="display:none">
+                <label for="booking-nights">Number of Nights</label>
+                <select class="form-control" id="booking-nights">
+                  <option value="1">1 Night</option>
+                  <option value="2">2 Nights</option>
+                  <option value="3" selected>3 Nights</option>
+                  <option value="4">4 Nights</option>
+                  <option value="5">5 Nights</option>
+                  <option value="6">6 Nights</option>
+                  <option value="7">7 Nights</option>
+                </select>
+              </div>
+              <div class="form-group" id="guests-group">
+                <label for="booking-guests">Number of Guests / Adults</label>
+                <select class="form-control" id="booking-guests">
+                  <option value="1">1 Guest</option>
+                  <option value="2" selected>2 Guests</option>
+                  <option value="3">3 Guests</option>
+                  <option value="4">4 Guests</option>
+                  <option value="5">5 Guests</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label>Extra Addons (Optional)</label>
+              <div style="display:flex; flex-direction:column; gap:10px; margin-top:5px;">
+                <label style="display:flex;align-items:center;gap:10px;font-size:0.9rem;font-weight:400;text-transform:none">
+                  <input type="checkbox" id="addon-insurance" class="addon-cb" value="1500" style="width:16px;height:16px;accent-color:var(--accent-gold)">
+                  <span>Premium Travel Insurance (+₹1,500/person)</span>
+                </label>
+                <label style="display:flex;align-items:center;gap:10px;font-size:0.9rem;font-weight:400;text-transform:none">
+                  <input type="checkbox" id="addon-transfer" class="addon-cb" value="2500" style="width:16px;height:16px;accent-color:var(--accent-gold)">
+                  <span>Private Airport Round-Trip transfers (+₹2,500 flat)</span>
+                </label>
+                <label style="display:flex;align-items:center;gap:10px;font-size:0.9rem;font-weight:400;text-transform:none">
+                  <input type="checkbox" id="addon-meals" class="addon-cb" value="3000" style="width:16px;height:16px;accent-color:var(--accent-gold)">
+                  <span>Upgrade to All-Inclusive Premium Dining (+₹3,000/person)</span>
+                </label>
+              </div>
+            </div>
+          </form>
+          <div class="wizard-buttons">
+            <div></div> <!-- Empty left spacer -->
+            <button class="btn btn-primary" onclick="goToStep(2)">Continue to Guests <i class="fa-solid fa-arrow-right"></i></button>
+          </div>
+        </section>
+        
+        <!-- STEP 2: Passenger/Guest Details -->
+        <section class="step-panel" id="panel-step-2">
+          <h2>Traveller Information</h2>
+          <form id="form-step-2">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="guest-name">Lead Traveller Full Name</label>
+                <input type="text" class="form-control" id="guest-name" placeholder="John Doe" required>
+              </div>
+              <div class="form-group">
+                <label for="guest-email">Email Address</label>
+                <input type="email" class="form-control" id="guest-email" placeholder="john@example.com" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="guest-phone">Contact Phone Number</label>
+                <input type="tel" class="form-control" id="guest-phone" placeholder="+91 99999 88888" required>
+              </div>
+              <div class="form-group">
+                <label for="guest-age">Lead Age</label>
+                <input type="number" class="form-control" id="guest-age" min="18" value="30" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="guest-requests">Special requests / Food restrictions</label>
+              <textarea class="form-control" id="guest-requests" placeholder="e.g. Vegetarian meals, wheelchair pickup assistance..." style="height:100px; resize:none"></textarea>
+            </div>
+          </form>
+          <div class="wizard-buttons">
+            <button class="btn btn-outline" onclick="goToStep(1)"><i class="fa-solid fa-arrow-left"></i> Back</button>
+            <button class="btn btn-primary" onclick="goToStep(3)">Continue to Payment <i class="fa-solid fa-arrow-right"></i></button>
+          </div>
+        </section>
+        
+        <!-- STEP 3: Payment -->
+        <section class="step-panel" id="panel-step-3">
+          <h2>Secure Payment Gateway</h2>
+          <form id="form-step-3">
+            <div style="background-color:rgba(16,185,129,0.05); border:1px solid rgba(16,185,129,0.2); padding:15px; border-radius:var(--radius-md); display:flex; gap:12px; font-size:0.85rem; margin-bottom:25px">
+              <i class="fa-solid fa-lock" style="color:var(--success); font-size:1.2rem; margin-top:2px;"></i>
+              <div>
+                <span style="font-weight:700; color:var(--primary-navy)">SSL Encrypted checkout</span>
+                <p style="color:var(--text-muted)">Your mock booking card number details will never leave this browser sandbox.</p>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="card-name">Cardholder Name</label>
+              <input type="text" class="form-control" id="card-name" placeholder="John Doe" required>
+            </div>
+            <div class="form-group">
+              <label for="card-num">Credit/Debit Card Number</label>
+              <input type="text" class="form-control" id="card-num" placeholder="4111 2222 3333 4444" maxlength="19" required>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="card-exp">Expiration Date</label>
+                <input type="text" class="form-control" id="card-exp" placeholder="MM/YY" maxlength="5" required>
+              </div>
+              <div class="form-group">
+                <label for="card-cvv">CVV</label>
+                <input type="password" class="form-control" id="card-cvv" placeholder="123" maxlength="3" required>
+              </div>
+            </div>
+          </form>
+          <div class="wizard-buttons">
+            <button class="btn btn-outline" onclick="goToStep(2)"><i class="fa-solid fa-arrow-left"></i> Back</button>
+            <button class="btn btn-primary" onclick="submitBooking()" id="btn-submit-pay">Pay & Complete Booking <i class="fa-solid fa-shield"></i></button>
+          </div>
+        </section>
+        
+        <!-- STEP 4: Success Confirmation -->
+        <section class="step-panel" id="panel-step-4">
+          <div class="success-container">
+            <div class="success-icon-wrapper">
+              <i class="fa-solid fa-check"></i>
+            </div>
+            <h2 style="border:none; margin-bottom:5px; font-family:var(--font-body)">Booking Confirmed!</h2>
+            <p style="color:var(--text-muted)">Thank you. Your transaction was completed successfully.</p>
+            
+            <div class="receipt-box">
+              <div class="receipt-header">
+                <span id="receipt-ref">REF: TRV-2026-82194</span>
+                <span id="receipt-date">Date: Aug 16, 2026</span>
+              </div>
+              <p style="margin-bottom:8px"><strong>Booking Details:</strong></p>
+              <p id="receipt-item-name" style="font-weight:600; color:var(--primary-navy)"></p>
+              <p id="receipt-item-meta" style="font-size:0.85rem; color:var(--text-muted); margin-bottom:15px"></p>
+              
+              <div style="border-top:1px solid var(--border-color); padding-top:15px; display:flex; justify-content:space-between">
+                <span>Total Amount Charged:</span>
+                <strong id="receipt-total" style="font-size:1.2rem; color:var(--primary-navy)">₹0</strong>
+              </div>
+            </div>
+            
+            <p style="font-size:0.9rem; margin-bottom:25px">We have emailed your confirmation voucher and flight/stay check-in coordinates.</p>
+            <div style="display:flex; justify-content:center; gap:15px">
+              <a href="profile.html#bookings" class="btn btn-primary">Go to Dashboard</a>
+              <button class="btn btn-outline" onclick="window.print()"><i class="fa-solid fa-print"></i> Print Invoice</button>
+            </div>
+          </div>
+        </section>
+        
+      </main>
+      
+      <!-- Checkout sidebar sum -->
+      <aside class="checkout-sidebar" id="booking-sidebar">
+        <h3>Invoice Summary</h3>
+        <div class="checkout-item-details">
+          <img src="" class="checkout-thumb" id="side-thumb" alt="Item Thumbnail">
+          <div class="checkout-info">
+            <h4 id="side-name">Dubai Premium Escape</h4>
+            <span id="side-desc">5 Days / 4 Nights</span>
+          </div>
+        </div>
+        
+        <div id="invoice-breakdown">
+          <div class="price-row">
+            <span id="base-price-label">Base Rate (2 Guests)</span>
+            <span id="base-price-val">₹0</span>
+          </div>
+          <div class="price-row" id="addons-row" style="display:none">
+            <span>Selected Addons</span>
+            <span id="addons-price-val">+₹0</span>
+          </div>
+          <div class="price-row">
+            <span>Taxes & Service Fees (12%)</span>
+            <span id="tax-price-val">₹0</span>
+          </div>
+          <div class="price-row">
+            <span>Local Conservation Levy</span>
+            <span>+₹1,200</span>
+          </div>
+          <div class="price-row total-row">
+            <span>Grand Total</span>
+            <span id="grand-total-val">₹0</span>
+          </div>
+        </div>
+      </aside>
+      
+    </div>
+  </div>
+
+  <!-- Dynamic Footer Placeholder -->
+  <footer class="footer" id="footer-placeholder"></footer>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/ai-assistant.js"></script>
+  
+  <script>
+    let checkoutItem = null;
+    let checkoutType = ""; // "Tour" or "Hotel"
+    let baseRate = 0;
+    
+    // Extracted URL values
+    let itemId = "";
+    let roomName = "";
+    
+    document.addEventListener("DOMContentLoaded", () => {
+      // 1. Setup shared components
+      window.renderHeader('home');
+      window.renderFooter();
+      
+      // 2. Read values from search params
+      const params = new URLSearchParams(window.location.search);
+      itemId = params.get("id");
+      checkoutType = params.get("type") || "Tour";
+      roomName = params.get("room") || "";
+      
+      if (!itemId) {
+        // Fallback default
+        itemId = "t-dubai-escape";
+        checkoutType = "Tour";
+      }
+      
+      // Load details based on type
+      if (checkoutType === "Hotel") {
+        checkoutItem = window.TravioraDb.getHotels().find(h => h.id === itemId);
+        baseRate = parseInt(params.get("price")) || (checkoutItem ? checkoutItem.price : 8500);
+        document.getElementById("nights-group").style.display = "block";
+      } else {
+        checkoutItem = window.TravioraDb.getTours().find(t => t.id === itemId);
+        baseRate = checkoutItem ? checkoutItem.price : 45999;
+      }
+      
+      if (!checkoutItem) {
+        window.showToast("Checkout item details error. Redirecting back.", "error");
+        setTimeout(() => location.href='index.html', 2000);
+        return;
+      }
+      
+      // Init elements
+      document.getElementById("booking-date").min = new Date().toISOString().split("T")[0]; // block past dates
+      document.getElementById("booking-date").value = new Date(Date.now() + 86400000 * 7).toISOString().split("T")[0]; // set next week default
+      
+      renderSidebarSummary();
+      recalculatePricing();
+      
+      // Event listeners for checkout recalculations
+      document.getElementById("booking-guests").addEventListener("change", recalculatePricing);
+      document.getElementById("booking-nights").addEventListener("change", recalculatePricing);
+      document.querySelectorAll(".addon-cb").forEach(cb => {
+        cb.addEventListener("change", recalculatePricing);
+      });
+    });
+
+    function renderSidebarSummary() {
+      document.getElementById("side-thumb").src = checkoutItem.image;
+      document.getElementById("side-name").textContent = checkoutType === "Hotel" ? `${checkoutItem.name} (${roomName})` : checkoutItem.name;
+      document.getElementById("side-desc").textContent = checkoutType === "Hotel" ? checkoutItem.location : checkoutItem.duration;
+    }
+
+    let calculatedTotal = 0;
+    function recalculatePricing() {
+      const guests = parseInt(document.getElementById("booking-guests").value);
+      const nights = parseInt(document.getElementById("booking-nights").value);
+      
+      let baseCost = 0;
+      if (checkoutType === "Hotel") {
+        baseCost = baseRate * nights;
+        document.getElementById("base-price-label").textContent = `Base Rate (${nights} Night${nights > 1 ? 's' : ''})`;
+      } else {
+        baseCost = baseRate * guests;
+        document.getElementById("base-price-label").textContent = `Base Rate (${guests} Guest${guests > 1 ? 's' : ''})`;
+      }
+      document.getElementById("base-price-val").textContent = `₹${baseCost.toLocaleString('en-IN')}`;
+      
+      // Addons
+      let addonsCost = 0;
+      document.querySelectorAll(".addon-cb:checked").forEach(cb => {
+        const val = parseInt(cb.value);
+        if (cb.id === "addon-insurance" || cb.id === "addon-meals") {
+          addonsCost += val * guests;
+        } else {
+          addonsCost += val; // flat rate round trip transfer
+        }
+      });
+      
+      const addonRow = document.getElementById("addons-row");
+      if (addonsCost > 0) {
+        addonRow.style.display = "flex";
+        document.getElementById("addons-price-val").textContent = `+₹${addonsCost.toLocaleString('en-IN')}`;
+      } else {
+        addonRow.style.display = "none";
+      }
+      
+      // Tax calculation
+      const taxableAmount = baseCost + addonsCost;
+      const tax = Math.floor(taxableAmount * 0.12);
+      document.getElementById("tax-price-val").textContent = `₹${tax.toLocaleString('en-IN')}`;
+      
+      // Grand total
+      calculatedTotal = taxableAmount + tax + 1200; // 1200 conservation levy
+      document.getElementById("grand-total-val").textContent = `₹${calculatedTotal.toLocaleString('en-IN')}`;
+    }
+
+    // Step switching flow
+    let activeStep = 1;
+    window.goToStep = function(step) {
+      // Form validators before moving next
+      if (step === 2 && activeStep === 1) {
+        if (!document.getElementById("booking-date").value) {
+          window.showToast("Please choose a valid travel date!", "warning");
+          return;
+        }
+      }
+      if (step === 3 && activeStep === 2) {
+        const name = document.getElementById("guest-name").value.trim();
+        const email = document.getElementById("guest-email").value.trim();
+        const phone = document.getElementById("guest-phone").value.trim();
+        if (!name || !email || !phone) {
+          window.showToast("Please fill all traveller contact fields!", "warning");
+          return;
+        }
+      }
+      
+      // Manage Panel visibilities
+      document.querySelectorAll(".step-panel").forEach(p => p.classList.remove("active"));
+      document.getElementById(`panel-step-${step}`).classList.add("active");
+      
+      // Manage Indicators
+      document.querySelectorAll(".step-indicator-wrapper").forEach((ind, idx) => {
+        const currentIdx = idx + 1;
+        if (currentIdx === step) {
+          ind.className = "step-indicator-wrapper active";
+        } else if (currentIdx < step) {
+          ind.className = "step-indicator-wrapper completed";
+        } else {
+          ind.className = "step-indicator-wrapper";
+        }
+      });
+      
+      activeStep = step;
+      window.scrollTo(0, 100);
+    };
+
+    // Card inputs helpers
+    document.getElementById("card-num").addEventListener("input", (e) => {
+      let val = e.target.value.replace(/\D/g, "");
+      val = val.replace(/(.{4})/g, "$1 ").trim();
+      e.target.value = val;
+    });
+    
+    document.getElementById("card-exp").addEventListener("input", (e) => {
+      let val = e.target.value.replace(/\D/g, "");
+      if (val.length >= 2) {
+        val = val.slice(0, 2) + "/" + val.slice(2, 4);
+      }
+      e.target.value = val;
+    });
+
+    // Complete Booking Action
+    window.submitBooking = function() {
+      const cardName = document.getElementById("card-name").value.trim();
+      const cardNum = document.getElementById("card-num").value.trim();
+      const cardExp = document.getElementById("card-exp").value.trim();
+      const cardCvv = document.getElementById("card-cvv").value.trim();
+      
+      if (!cardName || cardNum.length < 19 || cardExp.length < 5 || cardCvv.length < 3) {
+        window.showToast("Please check card payment format inputs!", "warning");
+        return;
+      }
+      
+      // Create order object
+      const refNumber = "TRV-2026-" + Math.floor(10000 + Math.random() * 90000);
+      const bookingObj = {
+        id: refNumber,
+        itemId: itemId,
+        itemName: checkoutType === "Hotel" ? `${checkoutItem.name} (${roomName})` : checkoutItem.name,
+        itemImage: checkoutItem.image,
+        type: checkoutType,
+        date: document.getElementById("booking-date").value,
+        guests: parseInt(document.getElementById("booking-guests").value),
+        nights: checkoutType === "Hotel" ? parseInt(document.getElementById("booking-nights").value) : null,
+        amount: calculatedTotal,
+        guestName: document.getElementById("guest-name").value.trim(),
+        guestEmail: document.getElementById("guest-email").value.trim(),
+        guestPhone: document.getElementById("guest-phone").value.trim(),
+        status: "Confirmed",
+        created: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+      };
+      
+      // Save in DB
+      window.TravioraDb.addBooking(bookingObj);
+      
+      // Update success receipt
+      document.getElementById("receipt-ref").textContent = `REF: ${bookingObj.id}`;
+      document.getElementById("receipt-date").textContent = `Date: ${bookingObj.created}`;
+      document.getElementById("receipt-item-name").textContent = bookingObj.itemName;
+      document.getElementById("receipt-item-meta").textContent = checkoutType === "Hotel" ? 
+        `Stay Date: ${bookingObj.date} | Nights: ${bookingObj.nights} | Guests: ${bookingObj.guests}` : 
+        `Travel Date: ${bookingObj.date} | Guests: ${bookingObj.guests}`;
+      document.getElementById("receipt-total").textContent = `₹${calculatedTotal.toLocaleString('en-IN')}`;
+      
+      // Hide checkout summary sidebar on confirmation screen
+      document.getElementById("booking-sidebar").style.display = "none";
+      
+      // Move to success step
+      window.goToStep(4);
+      window.showToast("Booking created successfully!", "success");
+    };
+  </script>
+</body>
+</html>

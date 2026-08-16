@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plan My Custom Trip | Traviora</title>
+  
+  <!-- Icon & Styling CDNs -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  
+  <style>
+    /* Plan My Trip Specific Layout */
+    .breadcrumb-section {
+      padding: 100px 0 20px;
+      background-color: var(--light-gray);
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .breadcrumbs {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      gap: 8px;
+    }
+    
+    .planner-container {
+      padding: 50px 0 80px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .planner-card {
+      background-color: var(--pure-white);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .planner-header {
+      text-align: center;
+      margin-bottom: 35px;
+      border-bottom: 1.5px solid var(--border-color);
+      padding-bottom: 25px;
+    }
+    
+    .planner-header h1 {
+      font-size: 2rem;
+      color: var(--primary-navy);
+      margin-bottom: 8px;
+    }
+    
+    .planner-header p {
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+    
+    /* Wizard Steps Indicators */
+    .planner-steps-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 40px;
+      position: relative;
+    }
+    
+    .planner-steps-header::before {
+      content: '';
+      position: absolute;
+      top: 18px;
+      left: 5%;
+      right: 5%;
+      height: 2.5px;
+      background-color: var(--border-color);
+      z-index: 1;
+    }
+    
+    .planner-step-indicator {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 20%;
+    }
+    
+    .planner-step-node {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background-color: var(--border-color);
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.95rem;
+      border: 3px solid var(--pure-white);
+      transition: var(--transition);
+    }
+    
+    .planner-step-indicator.active .planner-step-node {
+      background-color: var(--accent-gold);
+      color: var(--primary-navy);
+      box-shadow: 0 0 0 4px rgba(201, 138, 36, 0.15);
+    }
+    
+    .planner-step-indicator.completed .planner-step-node {
+      background-color: var(--primary-navy);
+      color: var(--pure-white);
+    }
+    
+    .planner-step-label {
+      font-family: var(--font-body);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-top: 8px;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+    
+    .planner-step-indicator.active .planner-step-label {
+      color: var(--primary-navy);
+    }
+    
+    /* Panels */
+    .planner-panel {
+      display: none;
+    }
+    
+    .planner-panel.active {
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+    
+    /* Visual Options Grid */
+    .visual-options-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    
+    .visual-option-card {
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      cursor: pointer;
+      background-color: var(--pure-white);
+      transition: var(--transition);
+      position: relative;
+    }
+    
+    .visual-option-card img {
+      width: 100%;
+      height: 110px;
+      object-fit: cover;
+      transition: var(--transition);
+    }
+    
+    .visual-option-card:hover img {
+      transform: scale(1.05);
+    }
+    
+    .visual-option-info {
+      padding: 15px;
+      text-align: center;
+    }
+    
+    .visual-option-info h4 {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--primary-navy);
+    }
+    
+    .visual-option-card.selected {
+      border-color: var(--accent-gold);
+      box-shadow: 0 0 0 3px rgba(201, 138, 36, 0.12);
+      background-color: rgba(201, 138, 36, 0.03);
+    }
+    
+    .visual-option-card.selected::after {
+      content: '\f058';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      color: var(--accent-gold);
+      background: white;
+      border-radius: 50%;
+      line-height: 1;
+      font-size: 1.15rem;
+    }
+
+    /* Style Icons Grid */
+    .style-option-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    
+    .style-option-card {
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 25px;
+      text-align: center;
+      cursor: pointer;
+      background-color: var(--pure-white);
+      transition: var(--transition);
+    }
+    
+    .style-option-card i {
+      font-size: 2.2rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      transition: var(--transition);
+    }
+    
+    .style-option-card h4 {
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--primary-navy);
+    }
+    
+    .style-option-card.selected {
+      border-color: var(--accent-gold);
+      background-color: rgba(201, 138, 36, 0.04);
+    }
+    
+    .style-option-card.selected i {
+      color: var(--accent-gold);
+      transform: scale(1.1);
+    }
+    
+    /* Slider Range */
+    .slider-wrapper {
+      padding: 10px 0;
+    }
+    
+    .slider-range {
+      width: 100%;
+      height: 6px;
+      background-color: var(--border-color);
+      border-radius: 3px;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      cursor: pointer;
+    }
+    
+    .slider-range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background-color: var(--accent-gold);
+      border: 2px solid var(--pure-white);
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+
+    /* Form control overrides */
+    .form-group {
+      margin-bottom: 25px;
+    }
+    
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--primary-navy);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      background-color: var(--off-white);
+      font-size: 0.95rem;
+    }
+
+    /* AI Loading Spinner */
+    .ai-spinner-container {
+      text-align: center;
+      padding: 40px 0;
+    }
+    
+    .spinner-circle {
+      width: 70px;
+      height: 70px;
+      border: 5px solid var(--border-color);
+      border-top: 5px solid var(--accent-gold);
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Result Custom Itinerary Styles */
+    .itinerary-output-box {
+      background-color: var(--off-white);
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 30px;
+    }
+    
+    .itinerary-day-row {
+      margin-bottom: 20px;
+      border-left: 2px solid var(--accent-gold);
+      padding-left: 15px;
+    }
+    
+    .itinerary-day-row h4 {
+      font-family: var(--font-body);
+      color: var(--primary-navy);
+      font-size: 1.05rem;
+      margin-bottom: 4px;
+    }
+    
+    .planner-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 35px;
+      padding-top: 25px;
+      border-top: 1px solid var(--border-color);
+    }
+    
+    @media (max-width: 768px) {
+      .visual-options-grid, .style-option-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      
+      .planner-steps-header::before {
+        display: none;
+      }
+      
+      .planner-step-node {
+        width: 32px;
+        height: 32px;
+        font-size: 0.85rem;
+      }
+      
+      .planner-step-label {
+        font-size: 0.6rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .visual-options-grid, .style-option-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Dynamic Header Navigation -->
+  <header class="header" id="header-placeholder"></header>
+
+  <!-- Breadcrumbs -->
+  <section class="breadcrumb-section">
+    <div class="container">
+      <div class="breadcrumbs">
+        <a href="index.html">Home</a>
+        <span>&bull;</span>
+        <span style="color: var(--text-dark); font-weight: 500;">Plan My Trip</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Wizard Wrapper -->
+  <div class="container planner-container">
+    <div class="planner-card">
+      
+      <div class="planner-header">
+        <h1>AI Custom Trip Planner</h1>
+        <p>Answer a few questions to generate a day-by-day tailored itinerary</p>
+      </div>
+      
+      <!-- Steps Indicators -->
+      <div class="planner-steps-header">
+        <div class="planner-step-indicator active" id="p-ind-1">
+          <div class="planner-step-node">1</div>
+          <div class="planner-step-label">Destination</div>
+        </div>
+        <div class="planner-step-indicator" id="p-ind-2">
+          <div class="planner-step-node">2</div>
+          <div class="planner-step-label">Travel Style</div>
+        </div>
+        <div class="planner-step-indicator" id="p-ind-3">
+          <div class="planner-step-node">3</div>
+          <div class="planner-step-label">Duration & Cost</div>
+        </div>
+        <div class="planner-step-indicator" id="p-ind-4">
+          <div class="planner-step-node">4</div>
+          <div class="planner-step-label">Travelers</div>
+        </div>
+        <div class="planner-step-indicator" id="p-ind-5">
+          <div class="planner-step-node">5</div>
+          <div class="planner-step-label">Itinerary</div>
+        </div>
+      </div>
+      
+      <!-- Form Content Panels -->
+      
+      <!-- STEP 1: Destination -->
+      <section class="planner-panel active" id="p-panel-1">
+        <h3 style="margin-bottom:20px; font-family:var(--font-body)">Select Your Destination</h3>
+        <div class="visual-options-grid">
+          <div class="visual-option-card selected" onclick="selectDestOption('Goa', this)">
+            <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=300&q=80" alt="Goa">
+            <div class="visual-option-info"><h4>Goa</h4></div>
+          </div>
+          <div class="visual-option-card" onclick="selectDestOption('Kashmir', this)">
+            <img src="https://images.unsplash.com/photo-1566837945700-30057527ade0?auto=format&fit=crop&w=300&q=80" alt="Kashmir">
+            <div class="visual-option-info"><h4>Kashmir</h4></div>
+          </div>
+          <div class="visual-option-card" onclick="selectDestOption('Dubai', this)">
+            <img src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=300&q=80" alt="Dubai">
+            <div class="visual-option-info"><h4>Dubai</h4></div>
+          </div>
+          <div class="visual-option-card" onclick="selectDestOption('Bali', this)">
+            <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=300&q=80" alt="Bali">
+            <div class="visual-option-info"><h4>Bali</h4></div>
+          </div>
+          <div class="visual-option-card" onclick="selectDestOption('Maldives', this)">
+            <img src="https://images.unsplash.com/photo-1439066615861-d1af74d74000?auto=format&fit=crop&w=300&q=80" alt="Maldives">
+            <div class="visual-option-info"><h4>Maldives</h4></div>
+          </div>
+          <div class="visual-option-card" onclick="selectDestOption('Europe', this)">
+            <img src="https://images.unsplash.com/photo-1502784444187-359ac186c5bb?auto=format&fit=crop&w=300&q=80" alt="Europe">
+            <div class="visual-option-info"><h4>Europe</h4></div>
+          </div>
+        </div>
+        <div class="planner-buttons">
+          <div></div>
+          <button class="btn btn-primary" onclick="goToPlannerStep(2)">Next Step <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </section>
+      
+      <!-- STEP 2: Travel Style -->
+      <section class="planner-panel" id="p-panel-2">
+        <h3 style="margin-bottom:20px; font-family:var(--font-body)">What is your travel style?</h3>
+        <div class="style-option-grid">
+          <div class="style-option-card selected" onclick="selectStyleOption('Beach', this)">
+            <i class="fa-solid fa-umbrella-beach"></i>
+            <h4>Beach Escape</h4>
+          </div>
+          <div class="style-option-card" onclick="selectStyleOption('Mountain', this)">
+            <i class="fa-solid fa-mountain"></i>
+            <h4>Mountain Adventure</h4>
+          </div>
+          <div class="style-option-card" onclick="selectStyleOption('Romantic', this)">
+            <i class="fa-solid fa-heart"></i>
+            <h4>Romantic Getaway</h4>
+          </div>
+          <div class="style-option-card" onclick="selectStyleOption('Family', this)">
+            <i class="fa-solid fa-people-group"></i>
+            <h4>Family Holiday</h4>
+          </div>
+          <div class="style-option-card" onclick="selectStyleOption('Backpacking', this)">
+            <i class="fa-solid fa-person-hiking"></i>
+            <h4>Backpacking</h4>
+          </div>
+          <div class="style-option-card" onclick="selectStyleOption('Luxury', this)">
+            <i class="fa-solid fa-crown"></i>
+            <h4>Luxury Premium</h4>
+          </div>
+        </div>
+        <div class="planner-buttons">
+          <button class="btn btn-outline" onclick="goToPlannerStep(1)"><i class="fa-solid fa-arrow-left"></i> Back</button>
+          <button class="btn btn-primary" onclick="goToPlannerStep(3)">Next Step <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </section>
+      
+      <!-- STEP 3: Duration & Cost -->
+      <section class="planner-panel" id="p-panel-3">
+        <h3 style="margin-bottom:20px; font-family:var(--font-body)">Duration & Budget Range</h3>
+        
+        <div class="form-group">
+          <label>Trip Duration (Days)</label>
+          <select class="form-control" id="plan-days">
+            <option value="3">3 Days (Weekend Short)</option>
+            <option value="4">4 Days</option>
+            <option value="5" selected>5 Days (Standard)</option>
+            <option value="6">6 Days</option>
+            <option value="7">7 Days</option>
+            <option value="10">10 Days (Grand Tour)</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>Approx Budget (Per Person): <span id="budget-plan-val" style="color:var(--accent-gold); font-weight:700">₹60,000</span></label>
+          <div class="slider-wrapper">
+            <input type="range" class="slider-range" id="plan-budget" min="15000" max="150000" step="5000" value="60000">
+            <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--text-muted); margin-top:8px;">
+              <span>₹15,000</span>
+              <span>₹1,50,000</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="planner-buttons">
+          <button class="btn btn-outline" onclick="goToPlannerStep(2)"><i class="fa-solid fa-arrow-left"></i> Back</button>
+          <button class="btn btn-primary" onclick="goToPlannerStep(4)">Next Step <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </section>
+      
+      <!-- STEP 4: Travelers -->
+      <section class="planner-panel" id="p-panel-4">
+        <h3 style="margin-bottom:20px; font-family:var(--font-body)">Travel Companions</h3>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="plan-adults">Number of Adults (18+)</label>
+            <select class="form-control" id="plan-adults">
+              <option value="1">1 Adult (Solo)</option>
+              <option value="2" selected>2 Adults (Couple/Friends)</option>
+              <option value="3">3 Adults</option>
+              <option value="4">4 Adults</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="plan-kids">Children (0-17)</label>
+            <select class="form-control" id="plan-kids">
+              <option value="0" selected>0 Children</option>
+              <option value="1">1 Child</option>
+              <option value="2">2 Children</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="plan-month">Preferred Travel Month</label>
+          <select class="form-control" id="plan-month">
+            <option value="October 2026">October 2026</option>
+            <option value="November 2026">November 2026</option>
+            <option value="December 2026" selected>December 2026 (Holiday Season)</option>
+            <option value="January 2027">January 2027</option>
+            <option value="February 2027">February 2027</option>
+          </select>
+        </div>
+        
+        <div class="planner-buttons">
+          <button class="btn btn-outline" onclick="goToPlannerStep(3)"><i class="fa-solid fa-arrow-left"></i> Back</button>
+          <button class="btn btn-primary" onclick="generateAiItinerary()"><i class="fa-solid fa-wand-magic-sparkles"></i> Generate AI Itinerary</button>
+        </div>
+      </section>
+      
+      <!-- STEP 5: Itinerary Output & Saving -->
+      <section class="planner-panel" id="p-panel-5">
+        
+        <!-- Loading overlay -->
+        <div class="ai-spinner-container" id="planner-loading">
+          <div class="spinner-circle"></div>
+          <h3 style="font-family:var(--font-body)">Traviora AI Itinerary Engine</h3>
+          <p style="color:var(--text-muted); margin-top:5px">Curating stay hotels, private drivers, and daily routes...</p>
+        </div>
+        
+        <!-- Generated output -->
+        <div id="planner-results" style="display:none">
+          <h3 style="margin-bottom:15px; font-family:var(--font-body); display:flex; align-items:center; gap:8px;">
+            <i class="fa-solid fa-compass" style="color:var(--accent-gold)"></i> 
+            Your Custom Day-by-Day Route
+          </h3>
+          
+          <div class="itinerary-output-box">
+            <div id="itinerary-desc-summary" style="font-size:0.95rem; line-height:1.6; margin-bottom:20px; border-bottom:1px solid var(--border-color); padding-bottom:15px">
+              <!-- Summary text -->
+            </div>
+            
+            <div id="itinerary-days-container">
+              <!-- Day by day lists -->
+            </div>
+            
+            <div style="margin-top:25px; border-top:1px dashed var(--border-color); padding-top:20px; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <span style="font-size:0.8rem; color:var(--text-muted)">Estimated Package Total:</span>
+                <h4 id="itinerary-price-quote" style="font-family:var(--font-body); font-size:1.5rem; color:var(--primary-navy); margin-top:2px;">₹0</h4>
+              </div>
+              <button class="btn btn-primary" onclick="saveCustomItinerary()"><i class="fa-solid fa-floppy-disk"></i> Save Custom Trip to Dashboard</button>
+            </div>
+          </div>
+          
+          <div class="planner-buttons">
+            <button class="btn btn-outline" onclick="goToPlannerStep(4)"><i class="fa-solid fa-arrow-left"></i> Edit Details</button>
+            <a href="tours.html" class="btn btn-secondary">Browse Stays Instead</a>
+          </div>
+        </div>
+        
+      </section>
+      
+    </div>
+  </div>
+
+  <!-- Dynamic Footer Placeholder -->
+  <footer class="footer" id="footer-placeholder"></footer>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/ai-assistant.js"></script>
+  
+  <script>
+    let selectedDest = "Goa";
+    let selectedStyle = "Beach";
+    
+    document.addEventListener("DOMContentLoaded", () => {
+      // 1. Render layout components
+      window.renderHeader('home');
+      window.renderFooter();
+      
+      // 2. Budget slider listener
+      const budgetSlider = document.getElementById("plan-budget");
+      const budgetVal = document.getElementById("budget-plan-val");
+      budgetSlider.addEventListener("input", (e) => {
+        budgetVal.textContent = `₹${parseInt(e.target.value).toLocaleString('en-IN')}`;
+      });
+    });
+
+    window.selectDestOption = function(dest, card) {
+      selectedDest = dest;
+      document.querySelectorAll("#p-panel-1 .visual-option-card").forEach(c => c.classList.remove("selected"));
+      card.classList.add("selected");
+    };
+
+    window.selectStyleOption = function(style, card) {
+      selectedStyle = style;
+      document.querySelectorAll("#p-panel-2 .style-option-card").forEach(c => c.classList.remove("selected"));
+      card.classList.add("selected");
+    };
+
+    let activePlannerStep = 1;
+    window.goToPlannerStep = function(step) {
+      document.querySelectorAll(".planner-panel").forEach(p => p.classList.remove("active"));
+      document.getElementById(`p-panel-${step}`).classList.add("active");
+      
+      document.querySelectorAll(".planner-step-indicator").forEach((ind, idx) => {
+        const currentIdx = idx + 1;
+        if (currentIdx === step) {
+          ind.className = "planner-step-indicator active";
+        } else if (currentIdx < step) {
+          ind.className = "planner-step-indicator completed";
+        } else {
+          ind.className = "planner-step-indicator";
+        }
+      });
+      activePlannerStep = step;
+    };
+
+    // AI custom engine mockup
+    let generatedItineraryData = null;
+
+    window.generateAiItinerary = function() {
+      goToPlannerStep(5);
+      
+      const loader = document.getElementById("planner-loading");
+      const results = document.getElementById("planner-results");
+      
+      loader.style.display = "block";
+      results.style.display = "none";
+      
+      setTimeout(() => {
+        // Build data structure
+        const days = parseInt(document.getElementById("plan-days").value);
+        const budget = parseInt(document.getElementById("plan-budget").value);
+        const adults = parseInt(document.getElementById("plan-adults").value);
+        const kids = parseInt(document.getElementById("plan-kids").value);
+        const month = document.getElementById("plan-month").value;
+        const totalGuests = adults + kids;
+        
+        // Dynamic activity generator based on destination and style
+        const daysData = [];
+        for (let d = 1; d <= days; d++) {
+          if (d === 1) {
+            daysData.push({ day: 1, title: "Welcome & Airport Meet", desc: `Arrive in ${selectedDest}. Meet your private driver at terminal gates and check-in to your handpicked ${selectedStyle} theme resort.` });
+          } else if (d === days) {
+            daysData.push({ day: d, title: "Airport Dropoff & Departure", desc: `Enjoy local morning shopping. Check-out of the hotel and enjoy transfer service back to airport for flight home.` });
+          } else {
+            daysData.push({
+              day: d,
+              title: getItineraryTitle(selectedDest, selectedStyle, d),
+              desc: getItineraryDesc(selectedDest, selectedStyle, d)
+            });
+          }
+        }
+        
+        const finalCost = Math.floor(budget * totalGuests * 0.92);
+        
+        generatedItineraryData = {
+          name: `Custom AI Itinerary: ${selectedDest} Escape`,
+          destination: selectedDest,
+          style: selectedStyle,
+          days: days,
+          guests: totalGuests,
+          cost: finalCost,
+          month: month,
+          daysList: daysData
+        };
+        
+        // Render values
+        document.getElementById("itinerary-desc-summary").innerHTML = `
+          <strong>Trip Outline:</strong> ${days} Days custom package for <strong>${totalGuests} Travellers</strong> (${adults} Adults, ${kids} Kids) in <strong>${month}</strong>.<br>
+          <strong>Travel Style:</strong> ${selectedStyle} theme. Handpicked boutique stays, certified local guides, transport and airport transfers included.
+        `;
+        
+        document.getElementById("itinerary-days-container").innerHTML = daysData.map(day => `
+          <div class="itinerary-day-row">
+            <h4>Day ${day.day}: ${day.title}</h4>
+            <p style="font-size:0.9rem; color:var(--text-dark); line-height:1.5;">${day.desc}</p>
+          </div>
+        `).join('');
+        
+        document.getElementById("itinerary-price-quote").textContent = `₹${finalCost.toLocaleString('en-IN')}`;
+        
+        // Show results
+        loader.style.display = "none";
+        results.style.display = "block";
+        window.showToast("Custom route compiled successfully!", "success");
+      }, 1800);
+    };
+
+    function getItineraryTitle(dest, style, dayNum) {
+      const titles = {
+        Bali: ["Tegallalang Rice Swings", "Uluwatu Sunset Temple Fire Dance", "Nusa Penida Speedboat Coral Snorkeling", "Ubud Craft Markets"],
+        Goa: ["Baga Beach Watersports", "Old Goa Historical Churches", "Mandovi River Dinner Cruise", "Dudhsagar Jungle Waterfall Trek"],
+        Dubai: ["Burj Khalifa High Altitude Observatory", "Desert Dunes 4x4 BBQ Safari", "Dubai Marina Yacht Lounge Cruise", "Aquaventure Waterpark"],
+        Kashmir: ["Gulmarg Gondola Mountain Cable Car Ride", "Srinagar Shikara Ride at Dal Lake", "Pahalgam Pine Valley Trek", "Mughal Shalimar Gardens"],
+        Maldives: ["Lagoon Overwater Villa Leisure", "Coral Reef Private Snorkeling Boat Tour", "Sunset Beach BBQ Buffet", "Male City Heritage Walk"],
+        Europe: ["Eiffel Tower Paris Twilight Summit", "Swiss Rail Jungfraujoch Glacier Pass", "Amsterdam Canal Cruise Ride", "Rome Colosseum Guided Walk"]
+      };
+      
+      const list = titles[dest] || ["Scenic Sightseeing Tour", "Local Culinary & Food Walk", "Adventure Activities"];
+      return list[(dayNum - 2) % list.length];
+    }
+
+    function getItineraryDesc(dest, style, dayNum) {
+      return `Enjoy full day guided excursions including luxury transfers, entry ticket passes, english-speaking guide vouchers and authentic local restaurant lunches. Return back to resort in the evening.`;
+    }
+
+    // Save Itinerary to localStorage bookings database as a saved plan
+    window.saveCustomItinerary = function() {
+      if (!generatedItineraryData) return;
+      
+      const refNumber = "TRV-PLAN-" + Math.floor(10000 + Math.random() * 90000);
+      const bookingObj = {
+        id: refNumber,
+        itemId: "custom-planner-trip",
+        itemName: generatedItineraryData.name,
+        itemImage: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=300&q=80",
+        type: "Custom AI Itinerary",
+        date: `Dec 2026 (${generatedItineraryData.days} Days)`,
+        guests: generatedItineraryData.guests,
+        nights: generatedItineraryData.days - 1,
+        amount: generatedItineraryData.cost,
+        guestName: window.TravioraDb.getUser().name,
+        guestEmail: window.TravioraDb.getUser().email,
+        guestPhone: window.TravioraDb.getUser().phone,
+        status: "Confirmed",
+        created: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+      };
+      
+      window.TravioraDb.addBooking(bookingObj);
+      window.showToast("Custom Itinerary saved to bookings dashboard!", "success");
+      
+      // Redirect to profile bookings tab
+      setTimeout(() => {
+        location.href = "profile.html#bookings";
+      }, 1500);
+    };
+  </script>
+</body>
+</html>

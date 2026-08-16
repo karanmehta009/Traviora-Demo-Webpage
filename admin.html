@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | Traviora</title>
+  
+  <!-- Icon & Styling CDNs -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  
+  <style>
+    /* Admin dashboard layout overrides */
+    .breadcrumb-section {
+      padding: 100px 0 20px;
+      background-color: var(--light-gray);
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .breadcrumbs {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      gap: 8px;
+    }
+    
+    .admin-container {
+      padding: 50px 0 80px;
+    }
+    
+    /* Stats cards strip */
+    .stats-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    
+    .stat-card {
+      background-color: var(--pure-white);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .stat-icon-box {
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+    
+    .stat-blue { background-color: rgba(7, 27, 46, 0.08); color: var(--primary-navy); }
+    .stat-gold { background-color: rgba(201, 138, 36, 0.08); color: var(--accent-gold); }
+    .stat-green { background-color: rgba(16, 185, 129, 0.08); color: var(--success); }
+    .stat-purple { background-color: rgba(139, 92, 246, 0.08); color: #8b5cf6; }
+    
+    .stat-details span {
+      display: block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+    
+    .stat-details h3 {
+      font-family: var(--font-body);
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--primary-navy);
+      margin-top: 2px;
+    }
+    
+    /* Layout with tab controls on top, tables below */
+    .admin-nav-tabs {
+      display: flex;
+      gap: 15px;
+      border-bottom: 2px solid var(--border-color);
+      margin-bottom: 30px;
+      padding-bottom: 2px;
+    }
+    
+    .admin-tab-btn {
+      padding: 12px 24px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      background-color: transparent;
+      border-bottom: 3px solid transparent;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    
+    .admin-tab-btn:hover {
+      color: var(--accent-gold);
+    }
+    
+    .admin-tab-btn.active {
+      color: var(--primary-navy);
+      border-bottom-color: var(--accent-gold);
+    }
+    
+    /* Tables design */
+    .table-wrapper {
+      background-color: var(--pure-white);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      overflow-x: auto;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+    
+    .admin-table th {
+      background-color: var(--off-white);
+      padding: 18px 20px;
+      font-weight: 700;
+      color: var(--primary-navy);
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .admin-table td {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-dark);
+      vertical-align: middle;
+    }
+    
+    .admin-table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .table-row-thumb {
+      width: 50px;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+    }
+    
+    /* Action Buttons in Tables */
+    .action-btn-group {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .btn-table-action {
+      background: none;
+      border: 1px solid var(--border-color);
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+    
+    .btn-edit-action { color: var(--accent-gold); border-color: rgba(201, 138, 36, 0.3); }
+    .btn-edit-action:hover { background-color: rgba(201, 138, 36, 0.08); }
+    
+    .btn-delete-action { color: var(--danger); border-color: rgba(239, 68, 68, 0.3); }
+    .btn-delete-action:hover { background-color: rgba(239, 68, 68, 0.08); }
+    
+    /* Tabs Panels */
+    .admin-panel {
+      display: none;
+    }
+    
+    .admin-panel.active {
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+    
+    /* Section headers */
+    .admin-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+    
+    .admin-section-header h2 {
+      font-size: 1.5rem;
+    }
+    
+    @media (max-width: 1024px) {
+      .stats-strip {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .stats-strip {
+        grid-template-columns: 1fr;
+      }
+      .admin-nav-tabs {
+        flex-wrap: wrap;
+        gap: 5px;
+      }
+      .admin-tab-btn {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Dynamic Header Navigation -->
+  <header class="header" id="header-placeholder"></header>
+
+  <!-- Breadcrumbs -->
+  <section class="breadcrumb-section">
+    <div class="container">
+      <div class="breadcrumbs">
+        <a href="index.html">Home</a>
+        <span>&bull;</span>
+        <span style="color: var(--text-dark); font-weight: 500;">Admin Dashboard</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Admin Area Container -->
+  <div class="container admin-container">
+    
+    <!-- Stats Strip -->
+    <div class="stats-strip">
+      
+      <div class="stat-card">
+        <div class="stat-icon-box stat-blue"><i class="fa-solid fa-cart-shopping"></i></div>
+        <div class="stat-details">
+          <span>Bookings</span>
+          <h3 id="stat-bookings-count">0</h3>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon-box stat-green"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+        <div class="stat-details">
+          <span>Revenue</span>
+          <h3 id="stat-revenue-sum">₹0</h3>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon-box stat-gold"><i class="fa-solid fa-map"></i></div>
+        <div class="stat-details">
+          <span>Tours Listed</span>
+          <h3 id="stat-tours-count">0</h3>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon-box stat-purple"><i class="fa-solid fa-hotel"></i></div>
+        <div class="stat-details">
+          <span>Hotels Listed</span>
+          <h3 id="stat-hotels-count">0</h3>
+        </div>
+      </div>
+      
+    </div>
+    
+    <!-- Tab Controls Navigation -->
+    <nav class="admin-nav-tabs">
+      <button class="admin-tab-btn active" onclick="switchAdminTab('bookings', this)">Bookings Management</button>
+      <button class="admin-tab-btn" onclick="switchAdminTab('tours', this)">Tour Packages</button>
+      <button class="admin-tab-btn" onclick="switchAdminTab('hotels', this)">Stays & Hotels</button>
+      <button class="admin-tab-btn" onclick="switchAdminTab('database', this)">System Settings</button>
+    </nav>
+    
+    <!-- Tab panels content -->
+    
+    <!-- TAB 1: Bookings Management -->
+    <section class="admin-panel active" id="admin-bookings">
+      <div class="admin-section-header">
+        <h2>Total Customer Transactions</h2>
+        <span style="font-size:0.85rem;color:var(--text-muted)">Real-time localStorage audit logs</span>
+      </div>
+      <div class="table-wrapper">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Package Title</th>
+              <th>Date</th>
+              <th>Charged Amount</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="admin-bookings-rows">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+    
+    <!-- TAB 2: Tour Packages CRUD -->
+    <section class="admin-panel" id="admin-tours">
+      <div class="admin-section-header">
+        <h2>Tour Catalogue List</h2>
+        <button class="btn btn-primary btn-sm" onclick="openTourAddForm()"><i class="fa-solid fa-plus"></i> Add New Tour</button>
+      </div>
+      <div class="table-wrapper">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Tour Name</th>
+              <th>Destination</th>
+              <th>Duration</th>
+              <th>Price</th>
+              <th>Rating</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="admin-tours-rows">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+    
+    <!-- TAB 3: Stays CRUD -->
+    <section class="admin-panel" id="admin-hotels">
+      <div class="admin-section-header">
+        <h2>Stay Catalogue List</h2>
+        <button class="btn btn-primary btn-sm" onclick="openHotelAddForm()"><i class="fa-solid fa-plus"></i> Add New Stay</button>
+      </div>
+      <div class="table-wrapper">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Hotel Name</th>
+              <th>Location</th>
+              <th>Rating</th>
+              <th>Per Night</th>
+              <th>Amenities</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="admin-hotels-rows">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+    
+    <!-- TAB 4: Database Tools -->
+    <section class="admin-panel" id="admin-database">
+      <div class="admin-section-header">
+        <h2>System Reset Tools</h2>
+      </div>
+      <div class="details-section-card" style="margin-top:0">
+        <h3 style="color:var(--danger); font-family:var(--font-body); margin-bottom:10px">Dangerous Sandbox Reset Actions</h3>
+        <p style="margin-bottom:20px; font-size:0.95rem; color:var(--text-muted)">This resets the localStorage mock DB database table state back to the original baseline settings (Dubai, Bali, Goa packages, standard test users details, clearing your booking histories). Perfect for reset demos.</p>
+        <button class="btn btn-primary" style="background-color:var(--danger); border-color:var(--danger);" onclick="resetSystemData()"><i class="fa-solid fa-triangle-exclamation"></i> Reset Database Vouchers</button>
+      </div>
+    </section>
+    
+  </div>
+
+  <!-- Dynamic Footer Placeholder -->
+  <footer class="footer" id="footer-placeholder"></footer>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/ai-assistant.js"></script>
+</body>
+</html>

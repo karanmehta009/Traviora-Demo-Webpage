@@ -1,0 +1,214 @@
+/* ALAS/TRAVIORA Tours & Travel - Responsive Stylesheet */
+
+/* Responsive Breakpoints */
+
+/* --- 1440px - Large Desktops --- */
+@media (max-width: 1440px) {
+  .container {
+    max-width: 1200px;
+  }
+}
+
+/* --- 1200px - Standard Desktops --- */
+@media (max-width: 1200px) {
+  h1 {
+    font-size: 3.2rem;
+  }
+  
+  .nav-menu {
+    gap: 20px;
+  }
+  
+  .footer-top {
+    gap: 30px;
+  }
+}
+
+/* --- 1024px - Tablets Portrait & Small Desktops --- */
+@media (max-width: 1024px) {
+  h1 {
+    font-size: 2.8rem;
+  }
+  
+  h2 {
+    font-size: 2rem;
+  }
+  
+  .nav-menu {
+    display: none; /* Hide desktop nav menu */
+  }
+  
+  .hamburger {
+    display: block; /* Show mobile hamburger icon */
+  }
+  
+  .search-fields {
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+  
+  .search-btn {
+    grid-column: span 2;
+    width: 100%;
+    align-self: stretch;
+  }
+  
+  .grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .footer-top {
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+  
+  .tour-details-wrapper {
+    grid-template-columns: 1fr;
+  }
+  
+  .booking-card-wrapper {
+    position: static !important;
+  }
+}
+
+/* --- 768px - Large Mobiles & Tablets Portrait --- */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2.4rem;
+  }
+  
+  .hero {
+    min-height: 80vh;
+    padding-top: 80px;
+  }
+  
+  .hero-buttons {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .section {
+    padding: 60px 0;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .search-widget-container {
+    margin-top: -40px;
+  }
+  
+  .search-widget {
+    padding: 20px;
+  }
+  
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+  
+  .grid-3 {
+    grid-template-columns: 1fr;
+  }
+  
+  .grid-4 {
+    grid-template-columns: 1fr;
+  }
+  
+  .option-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .trust-content {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+  
+  .ai-chat-panel {
+    width: calc(100% - 40px);
+    right: 20px;
+    bottom: 90px;
+    height: 480px;
+  }
+  
+  .footer-bottom {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+  
+  .footer-legal-links a {
+    margin: 0 10px;
+  }
+}
+
+/* --- 480px - Mobile Screens --- */
+@media (max-width: 480px) {
+  h1 {
+    font-size: 2rem;
+  }
+  
+  .logo-title {
+    font-size: 1.3rem;
+  }
+  
+  .logo-icon {
+    font-size: 1.8rem;
+  }
+  
+  .search-fields {
+    grid-template-columns: 1fr;
+  }
+  
+  .search-btn {
+    grid-column: span 1;
+  }
+  
+  .nav-actions {
+    gap: 12px;
+  }
+  
+  .nav-actions .btn {
+    display: none; /* Hide primary CTA button on small mobile header, accessible via menu */
+  }
+  
+  .option-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .footer-top {
+    grid-template-columns: 1fr;
+  }
+  
+  .dest-card {
+    height: 320px;
+  }
+  
+  .floating-widgets {
+    bottom: 20px;
+    right: 20px;
+  }
+}
+
+/* --- 375px - Extra Small Mobiles --- */
+@media (max-width: 375px) {
+  .logo-subtitle {
+    letter-spacing: 2px;
+  }
+  
+  .hero-title {
+    font-size: 1.8rem;
+  }
+  
+  .toast {
+    min-width: calc(100% - 40px);
+    right: 20px;
+  }
+}
